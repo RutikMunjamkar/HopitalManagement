@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: HopitalManagement
+  datasource:
+    url: jdbc:postgresql://localhost:5432/HospitalDB
+    username:
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+#  security:
+#    user:
+#      name: rutik
+#      password: pass
+
+
+server:
+  servlet:
+    context-path: /api

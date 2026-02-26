@@ -18,12 +18,11 @@ spring:
     init:
       mode: always
       data-locations: classpath:data.sql
-#  security:
-#    user:
-#      name: rutik
-#      password: pass
 
 
 server:
   servlet:
     context-path: /api
+
+jwt:
+  secretKey: 678nk2@2gkkkffmmmkkfkk&ëeeeeę)(*mfkjkabdkajewkfbaebfljefjbajebfb

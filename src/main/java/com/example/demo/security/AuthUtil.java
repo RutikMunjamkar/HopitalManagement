@@ -1,10 +1,12 @@
 package com.example.demo.security;
 
 import com.example.demo.entity.User;
+import com.example.demo.type.AuthProviderType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -38,5 +40,40 @@ public class AuthUtil {
                 .parseSignedClaims(token)
                 .getPayload();
         return claims.getSubject();
+    }
+
+    public AuthProviderType getProviderTypeFromRegistrationId(String registrationId){
+        return switch (registrationId.toLowerCase()){
+            case "google" -> AuthProviderType.GOOGLE;
+            case "facebook"->AuthProviderType.FACEBOOK;
+            case "github" ->AuthProviderType.GITHUB;
+            case "twitter" ->AuthProviderType.TWITTER;
+            case "email" ->AuthProviderType.EMAIL;
+            default -> throw new IllegalArgumentException("unsupported Oauth2 provider :" +registrationId);
+        };
+    }
+
+    public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String registrationId){
+        String providerId=switch (registrationId.toLowerCase()){
+            case "google"-> oAuth2User.getAttribute("sub");
+            case "github"->oAuth2User.getAttribute("id").toString();
+            default -> throw new IllegalArgumentException("no registrationId found: "+registrationId);
+        };
+        if(providerId==null || providerId.isBlank()){
+            throw new IllegalArgumentException("no registrationId found: "+registrationId);
+        }
+        return providerId;
+    }
+
+    public String determineUserNameFromOAuthUser(OAuth2User oAuth2User, String registrationId, String providerId){
+         String email=oAuth2User.getAttribute("email");
+         if(email!=null && !email.isBlank()){
+             return email;
+         }
+         return switch (registrationId.toLowerCase()){
+             case "google"-> oAuth2User.getAttribute("name");
+             case "github"-> oAuth2User.getAttribute("login");
+             default -> providerId;
+         };
     }
 }

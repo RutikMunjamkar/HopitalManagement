@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 
 @Data
-public class CustomException {
+public class CustomException extends RuntimeException{
     private LocalDate timeStamp;
     private String error;
     private HttpStatus statusCode;

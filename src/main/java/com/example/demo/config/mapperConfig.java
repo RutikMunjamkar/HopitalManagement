@@ -1,15 +1,12 @@
 package com.example.demo.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import tools.jackson.databind.ObjectMapper;
+
 
 @Configuration
 public class mapperConfig {
@@ -20,17 +17,8 @@ public class mapperConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @BCryptPasswordEncoderBean
-//    UserDetailsService userDetailsService(){
-//        UserDetails user1= User.withUsername("admin")
-//                .password(passwordEncoder.encode("pass"))
-//                .roles("ADMIN")
-//                .build();
-//
-//        UserDetails user2 =User.withUsername("patient")
-//                .password(passwordEncoder.encode("pass"))
-//                .roles("PATIENT")
-//                .build();
-//        return new InMemoryUserDetailsManager(user1,user2);
-//    }
+    @Bean
+    public AuthenticationManager getAuthenticationManage(AuthenticationConfiguration authenticationConfiguration){
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }

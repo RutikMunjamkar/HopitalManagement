@@ -18,6 +18,13 @@ spring:
     init:
       mode: always
       data-locations: classpath:data.sql
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 449173889065-m0ja9nflfoeh7rdskcf8oeaovpis7ki8.apps.googleusercontent.com
+            client-secret: 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
 
 
 server:

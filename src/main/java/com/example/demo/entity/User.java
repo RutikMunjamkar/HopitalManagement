@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.type.AuthProviderType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "APP_USER")
+@Table(name = "APP_USER",indexes = {@Index(name="idx_provider_id_auth_provider_type",columnList = "providerId, authProviderType")})
 public class User implements UserDetails {
 
     @Id
@@ -24,6 +25,11 @@ public class User implements UserDetails {
     private String username;
 
     private String password;
+
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProviderType authProviderType;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

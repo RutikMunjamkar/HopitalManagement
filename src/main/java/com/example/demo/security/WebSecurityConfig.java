@@ -1,23 +1,29 @@
 package com.example.demo.security;
 
-import jakarta.servlet.Filter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
+
 @Configuration
+@Slf4j
 public class WebSecurityConfig {
 
     @Autowired
     JwtAuthFilter jwtAuthFilter;
+
+    @Autowired
+    OAuth2SuccessHandler oAuth2SuccessHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -31,13 +37,14 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oAuth2->oAuth2.failureHandler(
+                        (request, response, exception) ->
+                                log.error("this is error: {} ", exception.getMessage())
+                        )
+                        .successHandler(oAuth2SuccessHandler)
+                );
 //                .formLogin(Customizer.withDefaults());
         return httpSecurity.build();
-    }
-
-    @Bean
-    public AuthenticationManager getAuthenticationManage(AuthenticationConfiguration authenticationConfiguration){
-        return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -1,21 +1,28 @@
 package com.example.demo.security;
 
+import com.example.demo.type.PermissionType;
+import com.example.demo.type.RoleType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 
 @Configuration
 @Slf4j
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     @Autowired
@@ -24,6 +31,12 @@ public class WebSecurityConfig {
     @Autowired
     OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    @Autowired
+    HandlerExceptionResolver handlerExceptionResolver;
+
+    @Autowired
+    CustomAuthenticationException customAuthenticationException;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -31,19 +44,26 @@ public class WebSecurityConfig {
                 .csrf(csrfConfig->csrfConfig.disable())
                 .sessionManagement(sessionConfig->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/patients/**").hasRole("PATIENT")
-                        .requestMatchers("/doctors/**").hasAnyRole("DOCTOR", "ADMIN")
+                        .requestMatchers("/public/**").permitAll().
+                        requestMatchers(HttpMethod.DELETE,"/auth/**").hasAnyAuthority(PermissionType.APPOINTMENT_DELETE.getPermission(),PermissionType.USER_MANAGE.getPermission())
+                        .requestMatchers("/patients/**").hasRole(RoleType.PATIENT.name())
+                        .requestMatchers("/doctors/**").hasAnyRole(RoleType.DOCTOR.name(), RoleType.ADMIN.name())
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/admin/**").hasAnyRole(RoleType.ADMIN.name(),RoleType.DOCTOR.name())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2->oAuth2.failureHandler(
-                        (request, response, exception) ->
-                                log.error("this is error: {} ", exception.getMessage())
-                        )
-                        .successHandler(oAuth2SuccessHandler)
-                );
+                        (request, response, exception) -> {
+                            log.error("this is error: {} ", exception.getMessage());
+                            handlerExceptionResolver.resolveException(request,response,null,exception);
+                        })
+                        .successHandler(oAuth2SuccessHandler).disable()
+                )
+                .exceptionHandling(exceptionHandling->
+                        exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) ->
+                                handlerExceptionResolver.resolveException(request,response,null,accessDeniedException)
+                ).authenticationEntryPoint(customAuthenticationException));
 //                .formLogin(Customizer.withDefaults());
         return httpSecurity.build();
     }

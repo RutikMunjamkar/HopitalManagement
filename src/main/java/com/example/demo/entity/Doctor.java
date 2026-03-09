@@ -27,7 +27,7 @@ public class Doctor {
     @Column(nullable = false,length = 50)
     private String name;
 
-    @Column(nullable = false,length = 30)
+
     private String specialization;
 
     @Column(nullable = false,unique = true)
@@ -44,4 +44,8 @@ public class Doctor {
     @ManyToMany(mappedBy = "doctors")
     @JsonBackReference
     private Set<Department> departments=new HashSet<>();
+
+    @OneToOne
+    @MapsId
+    private User user;
 }

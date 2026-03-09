@@ -8,10 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -31,10 +32,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         String username=authUtil.getUserName(token.substring(7));
-        if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+        if(username!=null && getContext().getAuthentication()==null){
             User user= (User) userRepository.findByUsername(username).orElseThrow();
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(user,null,null);
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities() );
+            getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
         filterChain.doFilter(request,response);
     }

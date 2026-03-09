@@ -33,6 +33,7 @@ public class Patient {
 
     //if want to exclude from the toString method
     @ToString.Exclude
+    @Column(check=@CheckConstraint(name = "chk_age", constraint = "gender = male"))
     private String gender;
 
     @CreationTimestamp
@@ -50,4 +51,8 @@ public class Patient {
     @OneToMany(mappedBy = "patient",fetch = FetchType.EAGER, cascade ={CascadeType.REMOVE}, orphanRemoval = true) //inverse side
     @JsonBackReference
     private List<Appointment> appointmentList=new ArrayList<>();
+
+    @OneToOne
+    @MapsId
+    private User user;
 }

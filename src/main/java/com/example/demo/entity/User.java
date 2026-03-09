@@ -1,12 +1,17 @@
 package com.example.demo.entity;
 
+import com.example.demo.security.RolePermissionMapping;
 import com.example.demo.type.AuthProviderType;
+import com.example.demo.type.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -31,8 +36,20 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AuthProviderType authProviderType;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    Set<RoleType> roles=new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        //return roles.stream().map(role->new SimpleGrantedAuthority("ROLE_"+role.name())).collect(Collectors.toSet());
+        Set<SimpleGrantedAuthority>authorities=new HashSet<>();
+        roles.forEach(role->{
+            Set<SimpleGrantedAuthority>permission=RolePermissionMapping.getAuthoritiesForRole(role);
+            authorities.addAll(permission);
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
+        }
+        );
+        return authorities;
     }
 }

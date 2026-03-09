@@ -1,20 +1,16 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.Appointment;
-import com.example.demo.entity.Department;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+
 
 @AllArgsConstructor
 @ToString
 @Getter
 @Setter
+@NoArgsConstructor
 public class DoctorDto {
     private Long id;
     private String name;

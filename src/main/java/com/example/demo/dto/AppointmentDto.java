@@ -1,10 +1,6 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.Appointment;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class AppointmentDto {
     private Long id;
     private LocalDateTime appointmentTime;

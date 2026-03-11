@@ -1,3 +1,9 @@
+INSERT INTO app_user (username, password, provider_id, auth_provider_type)
+VALUES
+    ('amit', 'password123', 'google123', 'GOOGLE'),
+    ('neha', 'password456', 'github456', 'GITHUB');
+
+
 INSERT INTO Patient (name, date_of_birth, email, gender, blood_group)
 VALUES
     ('Amit Sharma', '1998-05-12', 'amit.sharma@gmail.com', 'Male', 'O_POSITIVE'),

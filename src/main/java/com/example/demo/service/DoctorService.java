@@ -9,12 +9,14 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;

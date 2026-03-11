@@ -33,7 +33,7 @@ public class Patient {
 
     //if want to exclude from the toString method
     @ToString.Exclude
-    @Column(check=@CheckConstraint(name = "chk_age", constraint = "gender = male"))
+    @Column(check=@CheckConstraint(name = "chk_age", constraint = "gender IN ('Male', 'Female')"))
     private String gender;
 
     @CreationTimestamp
@@ -53,6 +53,6 @@ public class Patient {
     private List<Appointment> appointmentList=new ArrayList<>();
 
     @OneToOne
-    @MapsId
+    //@MapsId
     private User user;
 }

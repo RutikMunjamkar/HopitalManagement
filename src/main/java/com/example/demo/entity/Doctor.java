@@ -46,6 +46,6 @@ public class Doctor {
     private Set<Department> departments=new HashSet<>();
 
     @OneToOne
-    @MapsId
+    //@MapsId
     private User user;
 }

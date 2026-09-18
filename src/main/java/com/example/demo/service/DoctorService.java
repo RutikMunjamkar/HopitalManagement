@@ -9,14 +9,13 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Set;
 import static com.example.demo.type.RoleType.DOCTOR;
 
 @Service
+@Validated
 public class DoctorService {
 
     @Autowired
@@ -46,7 +46,7 @@ public class DoctorService {
     }
 
     @Transactional
-    @PreAuthorize("(hasRole(DOCTOR) OR hasRole(ADMIN)) AND #doctorId=authentication.pricipal.id")
+    @PreAuthorize("(hasRole(DOCTOR) OR hasRole(ADMIN)) AND #doctorRequestDto.doctorId=authentication.pricipal.id")
     public ResponseEntity<DoctorDto> onBoardNewDoctor(DoctorRequestDto doctorRequestDto) throws CustomException{
         //assuming that the username of user to be email type
         if(userRepository.existsByUsername(doctorRequestDto.getEmail())){

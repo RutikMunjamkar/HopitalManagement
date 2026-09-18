@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class PatientDto {
     private String id;
     private String name;

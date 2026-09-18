@@ -5,6 +5,7 @@ import com.example.demo.webclient.WebClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 
 import java.io.IOException;
@@ -21,12 +22,12 @@ public class ClientController {
     WebClientService webClientService;
 
     @GetMapping("/url")
-    public ResponseEntity<JsonNode> getDataFromUrl(@RequestBody Map<String,String> url) throws IOException {
+    public ResponseEntity<JsonNode> getDataFromUrl(@RequestBody Map<String,String> url, @CookieValue String cookie) throws IOException {
         return  customHttpConnection.getDataFromUrl(url.get("url"));
     }
 
     @GetMapping("/web")
-    public  ResponseEntity<JsonNode> getDataFromWebClient(@RequestBody Map<String,String>endpointmap){
-        return ResponseEntity.ok(webClientService.findDataByEndPoint(endpointmap.get("endpoint")));
+    public Mono<JsonNode> getDataFromWebClient(@RequestBody Map<String,String>endpointmap){
+        return webClientService.findDataByEndPoint(endpointmap.get("endpoint"));
     }
 }

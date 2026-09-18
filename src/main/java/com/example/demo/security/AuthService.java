@@ -23,10 +23,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.Set;
 import static com.example.demo.type.RoleType.*;
 
@@ -34,7 +37,6 @@ import static com.example.demo.type.RoleType.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -55,12 +57,18 @@ public class AuthService {
     @Autowired
     DoctorRepository doctorRepository;
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-            Authentication authentication=authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),loginRequestDto.getPassword())) ;
-        User user= (User) authentication.getPrincipal();
-        String token=authUtil.generateAccessToken(user);
-        return new LoginResponseDto(token, user.getId());
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws Exception {
+        throw new IOException();
+////        try{
+//            Authentication authentication=authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),loginRequestDto.getPassword()));
+//            User user= (User) authentication.getPrincipal();
+//            String token=authUtil.generateAccessToken(user);
+//            return new LoginResponseDto(token, user.getId());
+////        }
+////        catch (BadCredentialsException e){
+////            throw new CustomException("The Password is not correct",HttpStatus.UNAUTHORIZED);
+////        }
     }
 
     @Transactional

@@ -13,6 +13,5 @@ public enum PermissionType {
     APPOINTMENT_DELETE("appointment:delete"),
     USER_MANAGE("user:manage"),
     REPORT_VIEW("report:view");
-
     private final String permission;
 }

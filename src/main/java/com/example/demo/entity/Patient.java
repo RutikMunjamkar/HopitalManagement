@@ -46,7 +46,7 @@ public class Patient {
     @OneToOne(cascade =CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "patient_insurance_id")
     @JsonBackReference
-    private Insurance insurance; //patient is owning side
+    private Insurance insurance;
 
     @OneToMany(mappedBy = "patient",fetch = FetchType.EAGER, cascade ={CascadeType.REMOVE}, orphanRemoval = true) //inverse side
     @JsonBackReference

@@ -7,17 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-
 
 @Configuration
 @Slf4j
@@ -31,11 +27,12 @@ public class WebSecurityConfig {
     @Autowired
     OAuth2SuccessHandler oAuth2SuccessHandler;
 
+
     @Autowired
     HandlerExceptionResolver handlerExceptionResolver;
 
-    @Autowired
-    CustomAuthenticationException customAuthenticationException;
+//    @Autowired
+//    CustomAuthenticationException customAuthenticationException;
 
 
     @Bean
@@ -50,21 +47,23 @@ public class WebSecurityConfig {
                         .requestMatchers("/doctors/**").hasAnyRole(RoleType.DOCTOR.name(), RoleType.ADMIN.name())
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole(RoleType.ADMIN.name(),RoleType.DOCTOR.name())
-                        .anyRequest().authenticated()
+                        .requestMatchers("/login/**").permitAll() // there is denyall as well.
+                        .anyRequest().authenticated() // should contain the authentication object in the security context
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterAfter(jwtAuthFilter, ExceptionTranslationFilter.class)
                 .oauth2Login(oAuth2->oAuth2.failureHandler(
                         (request, response, exception) -> {
                             log.error("this is error: {} ", exception.getMessage());
                             handlerExceptionResolver.resolveException(request,response,null,exception);
                         })
-                        .successHandler(oAuth2SuccessHandler).disable()
-                )
-                .exceptionHandling(exceptionHandling->
-                        exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) ->
-                                handlerExceptionResolver.resolveException(request,response,null,accessDeniedException)
-                ).authenticationEntryPoint(customAuthenticationException));
-//                .formLogin(Customizer.withDefaults());
+                        .successHandler(oAuth2SuccessHandler)
+                );
+//                .exceptionHandling(exceptionHandling->
+//                        exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) ->
+//                                handlerExceptionResolver.resolveException(request,response,null,accessDeniedException)
+//                ).authenticationEntryPoint(customAuthenticationException));
+                //.formLogin(Customizer.withDefaults());
         return httpSecurity.build();
     }
 }

@@ -25,11 +25,15 @@ spring:
           google:
             client-id: 449173889065-m0ja9nflfoeh7rdskcf8oeaovpis7ki8.apps.googleusercontent.com
             client-secret: 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
-
+            scope:
+              - openid
+              - profile
+              - email
 
 server:
   servlet:
     context-path: /api
+  port: 8081
 
 jwt:
   secretKey: 678nk2@2gkkkffmmmkkfkk&ëeeeeę)(*mfkjkabdkajewkfbaebfljefjbajebfb
